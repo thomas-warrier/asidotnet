@@ -28,6 +28,12 @@ builder.Services.AddScoped<LocationService>();
 builder.AddNpgsqlDbContext<RentalDbContext>("RentalDb");
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+// Configure le client HTTP pour qu'il trouve le service de paiement grâce à Aspire
+builder.Services.AddHttpClient("PaiementClient", client => 
+{
+    client.BaseAddress = new Uri("http://paiementservice"); 
+});
+
 var app = builder.Build();
 
 app.UseExceptionHandler();

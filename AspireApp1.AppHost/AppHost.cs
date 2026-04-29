@@ -1,19 +1,28 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+// --- 1. INFRASTRUCTURE (Base de données & Cache) ---
 var cache = builder.AddRedis("cache");
 
-// Ajout du serveur PostgreSQL et de la base de données
 var postgres = builder.AddPostgres("postgres")
     .WithPgAdmin(); // pour avoir une interface de gestion DB
 
 var database = postgres.AddDatabase("RentalDb");
 
-// Configuration de l'API avec référence à la base de données
+// A. On déclare d'abord le service de paiement
+var paiementService = builder.AddProject<Projects.AspireApp1_PaiementService>("paiementservice");
+
 var apiService = builder.AddProject<Projects.AspireApp1_ApiService>("apiservice")
     .WithHttpHealthCheck("/health")
-    .WithReference(database); // On passe la référence de la DB à l'ApiService
+    .WithReference(database)         // Accès à la base de données
+    .WaitFor(database)               // Attend que la base soit prête avant de démarrer l'API
+    .WithReference(paiementService); // Accès au service de paiement
 
-// Configuration du Front-end (Web)
+
+builder.AddProject<Projects.AspireApp1_Gateway>("gateway")
+    .WithReference(apiService) 
+    .WithExternalHttpEndpoints();
+
+// Front-end (Web)
 builder.AddProject<Projects.AspireApp1_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
@@ -21,9 +30,5 @@ builder.AddProject<Projects.AspireApp1_Web>("webfrontend")
     .WaitFor(cache)
     .WithReference(apiService)
     .WaitFor(apiService);
-
-builder.AddProject<Projects.AspireApp1_Gateway>("gateway")
-    .WithReference(apiService) // La gateway doit connaître l'URL de l'API [cite: 73]
-    .WithExternalHttpEndpoints(); // Elle est exposée au public [cite: 75]
 
 builder.Build().Run();

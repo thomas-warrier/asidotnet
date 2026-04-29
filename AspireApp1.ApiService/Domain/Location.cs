@@ -9,6 +9,9 @@ public class Location
     [Key]
     [Column("loc_id")]
     public int Id { get; set; }
+    
+    [Column("loc_paye")]
+    public bool EstPaye { get; set; } = false;
 
     [Required]
     [Column("voi_id")]
