@@ -22,4 +22,8 @@ builder.AddProject<Projects.AspireApp1_Web>("webfrontend")
     .WithReference(apiService)
     .WaitFor(apiService);
 
+builder.AddProject<Projects.AspireApp1_Gateway>("gateway")
+    .WithReference(apiService) // La gateway doit connaître l'URL de l'API [cite: 73]
+    .WithExternalHttpEndpoints(); // Elle est exposée au public [cite: 75]
+
 builder.Build().Run();

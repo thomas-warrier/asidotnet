@@ -12,6 +12,19 @@ public static class ReserverEndpoint
     {
         app.MapPost("/locations", async (ReserverRequest req, RentalDbContext db, LocationService service) =>
             {
+                //Verif loueur et blacklist
+                var loueur = await db.Loueurs.FindAsync(req.LoueurId);
+            
+                if (loueur == null) 
+                    return Results.NotFound("Le loueur spécifié n'existe pas.");
+                
+                if (loueur.EstBlackliste) 
+                    return Results.Problem(
+                        title: "Action refusée",
+                        detail: "Ce loueur est sur liste noire et ne peut pas effectuer de réservation.", 
+                        statusCode: StatusCodes.Status403Forbidden // Retourne une erreur 403 !
+                    );
+                //verif voiture
                 var voiture = await db.Voitures.FirstOrDefaultAsync(v => v.Immatriculation == req.Immatriculation);
                 if (voiture == null) return Results.NotFound("Voiture non trouvée.");
             

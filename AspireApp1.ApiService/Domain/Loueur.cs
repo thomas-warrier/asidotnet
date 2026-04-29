@@ -12,6 +12,9 @@ public class Loueur
     [Key]
     [Column("lou_id")]
     public int Id { get; set; }
+    
+    [Column("lou_blackliste")]
+    public bool EstBlackliste { get; set; } = false;
 
     [Required]
     [MaxLength(100)]

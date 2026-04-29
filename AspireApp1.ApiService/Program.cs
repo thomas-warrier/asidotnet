@@ -3,6 +3,9 @@ using AspireApp1.ApiService.Features.Locations.Annuler;
 using AspireApp1.ApiService.Features.Locations.Consulter;
 using AspireApp1.ApiService.Features.Locations.Reserver;
 using AspireApp1.ApiService.Features.Locations.Service;
+using AspireApp1.ApiService.Features.Loueurs.Consulter;
+using AspireApp1.ApiService.Features.Loueurs.Creer;
+using AspireApp1.ApiService.Features.Loueurs.Modifier;
 using AspireApp1.ApiService.Features.Voitures.Consulter;
 using AspireApp1.ApiService.Features.Voitures.Creer;
 using AspireApp1.ApiService.Features.Voitures.GetCatalogue;
@@ -68,6 +71,10 @@ app.MapModifierVoitures();
 app.MapReserver();
 app.MapAnnulerLocation();
 app.MapLocationQueries();
+
+app.MapCreerLoueur();
+app.MapConsulterLoueurs();
+app.MapModifierLoueurs();
 
 app.MapDefaultEndpoints();
 // --- Section Migration Automatique avec Retry ---
